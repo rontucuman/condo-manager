@@ -74,6 +74,8 @@ DATABASES = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+USE_TZ = False
+
 DOMAIN_URL = os.environ['DOMAIN_URL']
 CSRF_TRUSTED_ORIGINS = [DOMAIN_URL]
 
