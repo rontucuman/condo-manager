@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
-import os
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,9 +26,7 @@ SECRET_KEY = 'django-insecure-q5*%_cok$ih4a#)q#hm9g81u3$g8%kxwnkg%nl7)6lu^nk$n-z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'condo-project.azurewebsites.net'
-]
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -81,16 +78,8 @@ WSGI_APPLICATION = 'condomanager.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'mssql',
-        'HOST': os.environ['DBHOST'],
-        'NAME': os.environ['DBNAME'],
-        'USER': os.environ['DBUSER'],
-        'PASSWORD': os.environ['DBPASS'],
-        'PORT': '1433',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-            'extra_params': "Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30"
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -138,8 +127,3 @@ MEDIA_ROOT = Path.joinpath(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-DOMAIN_URL = os.environ['DOMAIN_URL']
-CSRF_TRUSTED_ORIGINS = [DOMAIN_URL]
-
-CORS_ALLOWED_ORIGINS = [DOMAIN_URL]
