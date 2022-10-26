@@ -138,3 +138,7 @@ CSRF_TRUSTED_ORIGINS = [DOMAIN_URL]
 CORS_ALLOWED_ORIGINS = [DOMAIN_URL]
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "condomanager/static",
+]
