@@ -29,6 +29,7 @@ ALLOWED_HOSTS = [
 ]
 
 INSTALLED_APPS = [
+    'accounts',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -55,7 +56,7 @@ ROOT_URLCONF = 'condomanager.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [Path.joinpath(BASE_DIR, 'condomanager/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -137,3 +138,11 @@ CSRF_TRUSTED_ORIGINS = [DOMAIN_URL]
 CORS_ALLOWED_ORIGINS = [DOMAIN_URL]
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "condomanager/static",
+]
+
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGIN_URL = 'login_account'
+LOGOUT_URL = 'logout_account'
