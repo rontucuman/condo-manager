@@ -14,28 +14,53 @@
     <title>Condo Manager</title>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-3">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                {% load static %}
+    {% load static %}
+    <div class="container">
+    <nav class="navbar navbar-expand-lg bg-light">
+      <div class="container-fluid">
+        {% if request.user.is_authenticated %}
+            <a class="navbar-brand" href="{% url 'dashboard' %}">
                 <img src="{% static 'images/building1.png' %}" alt="" width="30" height="24" class="d-inline-block align-text-top">
-                Test 1
+                Condo Manager
             </a>
-            <button class="navbar-toogler" type="button" data-bs-toogle="collapse"
-                    data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup"
-                    aria-expanded="false" aria-label="Toggle Navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav ms-auto">
-                    <a class="nav-link" href="#">Test 2</a>
-                    <a class="nav-link" href="#">Test 3</a>
-                    <a class="nav-link" href="#">Test 4</a>
-                </div>
+        {% else %}
+            <a class="navbar-brand" href="{% url 'login_account' %}">
+                <img src="{% static 'images/building1.png' %}" alt="" width="30" height="24" class="d-inline-block align-text-top">
+                Condo Manager
+            </a>
+        {% endif %}
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="d-flex justify-content-end">
+                <ul class="navbar-nav">
+                    {% if request.user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout_account' %}">Logout {{ user.username }}</a>
+                        </li>
+                        </p>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login_account' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register_user' %}">Sign Up</a>
+                        </li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
+      </div>
     </nav>
-
+    </div>
+    <div class="container">
+        <h2>{% block title %}{% endblock title %}</h2>
+    </div>
     <div class="container">
         {% block content %}
         {% endblock content %}
