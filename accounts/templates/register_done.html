@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Welcome{% endblock %}
+{% block content %}
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div>
+                <div class="card-body">
+                    <h5 class="card-title">Welcome {{ new_user.first_name }}!</h5>
+                    <p class="card-text">
+                        Your account has been successfully created.
+
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
