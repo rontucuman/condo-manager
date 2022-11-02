@@ -2,7 +2,8 @@ from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from .forms import LoginForm, UserRegistrationForm
+# from .forms import LoginForm, UserRegistrationForm
+from .forms import UserRegistrationForm
 from django.contrib.auth.decorators import login_required
 
 
@@ -18,7 +19,7 @@ def register_user(request):
             return render(request, 'register_done.html', {'new_user': new_user})
     else:
         user_form = UserRegistrationForm()
-    return render(request, 'register_user.html', {'user_form': user_form})
+    return render(request, 'register_user.html', {'form': user_form})
 
 
 def logout_account(request):
@@ -26,28 +27,28 @@ def logout_account(request):
     return redirect('register_user')
 
 
-def login_account(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            user = authenticate(request,
-                                username=cd['username'],
-                                password=cd['password'])
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return HttpResponse('Authenticated successfully')
-                else:
-                    return HttpResponse('Disabled account')
-            else:
-                return HttpResponse('Invalid login')
-    else:
-        form = LoginForm()
-    return render(request, 'login_account.html', {'login_form': form})
+# def login_account(request):
+#     if request.method == 'POST':
+#         form = LoginForm(request.POST)
+#         if form.is_valid():
+#             cd = form.cleaned_data
+#             user = authenticate(request,
+#                                 username=cd['username'],
+#                                 password=cd['password'])
+#             if user is not None:
+#                 if user.is_active:
+#                     login(request, user)
+#                     return HttpResponse('Authenticated successfully')
+#                 else:
+#                     return HttpResponse('Disabled account')
+#             else:
+#                 return HttpResponse('Invalid login')
+#     else:
+#         form = LoginForm()
+#     return render(request, 'login_account.html', {'login_form': form})
 
 
 @login_required
 def dashboard(request):
-    return render(request, 'dashboard.html', {'section': 'dashborad'})
+    return render(request, 'dashboard.html', {'section': 'dashboard'})
 

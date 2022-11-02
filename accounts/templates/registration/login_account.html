@@ -8,19 +8,22 @@
                 <h5 class="card-title">Log-in</h5>
                 {% if form.errors %}
                     <div class="alert alert-danger" role="alert">
-                        <p class="card-text">Incorrect username or password.
-                        Please try again.</p>
+                        <p class="card-text">Incorrect username or password. Please try again.</p>
                     </div>
                 {% else %}
                     <p class="card-text">Please, use the following form to log-in:</p>
                 {% endif %}
                 <form action="{% url 'login_account' %}" method="post">
+                    <div class="form-group">
                     {% csrf_token %}
-                    {{ form.as_p }}
-                    <input type="hidden" name="next" value="{{ next }}">
-                    <button type="submit" class="btn btn-primary">
-                        Log in
-                    </button>
+                        {% for form_field in form %}
+                            <div class="mb-3">
+                                <label for="{{ form_field.id_for_label }}" class="form-label">{{ form_field.label }}</label>
+                                <input id="{{ form_field.id_for_label }}" class="form-control" type="{{ form_field.widget_type }}" name="{{ form_field.name }}">
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary">Log in</button>
+                    </div>
                 </form>
             </div>
         </div>
