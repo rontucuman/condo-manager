@@ -19,7 +19,7 @@ class SingleAzureEmailSender:
             address = EmailAddress(email='ronald.tucuman@outlook.com', display_name='RonTucumanTest01')
 
             message = EmailMessage(
-                sender='donotreplay@condo-manager.com',
+                sender='DoNotReply@8d2b0bcc-ae7f-4fb7-ac4e-df13bf2dd7f8.azurecomm.net',
                 content=content,
                 recipients=EmailRecipients(to=[address])
             )
