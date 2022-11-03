@@ -1,5 +1,8 @@
 from django.contrib.auth import logout
 from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
 from condomanager.email.SingleAzureEmailSender import SingleAzureEmailSender
 from .forms import UserRegistrationForm
 from django.contrib.auth.decorators import login_required
@@ -7,15 +10,22 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
+
+def testemailview(request):
+    return render(request, 'email/user_registered.html')
+
+
 def send_email(user):
+    html_message = render_to_string('email/user_registered.html', {'username': user.username})
+    plain_message = strip_tags(html_message)
+
     subject = 'Condo-Manager user created successfully'
     mail_to = user.email
-    content = 'hola mundo desde django email'
     email_sender = SingleAzureEmailSender()
     email_sender.send_message(
         subject=subject,
-        content_plain=content,
-        content_html=content,
+        content_plain=plain_message,
+        content_html=html_message,
         mail_to=mail_to)
 
 
