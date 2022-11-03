@@ -25,4 +25,3 @@ class SingleAzureEmailSender:
             )
 
             response = client.send(message)
-
