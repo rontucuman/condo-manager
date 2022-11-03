@@ -1,27 +1,33 @@
 from azure.communication.email import EmailClient, EmailMessage, EmailContent, EmailAddress, EmailRecipients
 from django.conf import settings
+from django.core.mail import send_mail
 
 
 class SingleAzureEmailSender:
-    subject = 'User create successfully'
-    from_email = 'DoNotReply@8d2b0bcc-ae7f-4fb7-ac4e-df13bf2dd7f8.azurecomm.net'
+    email_sender = settings.REGISTERED_EMAIL_SENDER
     connection_string = settings.AZURE_COMM_SRV_CONN_STR
 
-    def send_message(self, email_message):
-        if self.connection_string != '':
+    def send_message(self, subject, content_plain, content_html, mail_to):
+        if self.connection_string == '':
+            send_mail(
+                subject=subject,
+                message=content_plain,
+                from_email=self.email_sender,
+                recipient_list=[mail_to])
+        else:
             client = EmailClient.from_connection_string(conn_str=self.connection_string)
             content = EmailContent(
-                subject=self.subject,
-                plain_text='this is the body',
-                html='<html><h1>This is the body</h1></html>'
+                subject=subject,
+                plain_text=content_plain,
+                html=content_html
             )
 
-            address = EmailAddress(email='ronald.tucuman@outlook.com', display_name='RonTucumanTest01')
+            address = EmailAddress(email=mail_to)
 
             message = EmailMessage(
-                sender='DoNotReply@8d2b0bcc-ae7f-4fb7-ac4e-df13bf2dd7f8.azurecomm.net',
+                sender=self.email_sender,
                 content=content,
                 recipients=EmailRecipients(to=[address])
             )
 
-            response = client.send(message)
+            client.send(message)

@@ -1,6 +1,4 @@
-from django.contrib.auth import logout, login, authenticate
-from django.contrib.auth.forms import AuthenticationForm
-from django.http import HttpResponse
+from django.contrib.auth import logout
 from django.shortcuts import redirect, render
 from condomanager.email.SingleAzureEmailSender import SingleAzureEmailSender
 from .forms import UserRegistrationForm
@@ -8,6 +6,18 @@ from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
+
+def send_email(user):
+    subject = 'Condo-Manager user created successfully'
+    mail_to = user.email
+    content = 'hola mundo desde django email'
+    email_sender = SingleAzureEmailSender()
+    email_sender.send_message(
+        subject=subject,
+        content_plain=content,
+        content_html=content,
+        mail_to=mail_to)
+
 
 def register_user(request):
     if request.method == 'POST':
@@ -17,8 +27,9 @@ def register_user(request):
             new_user.set_password(user_form.cleaned_data['password'])
             new_user.is_active = False
             new_user.save()
-            email_sender = SingleAzureEmailSender()
-            email_sender.send_message('email for account new user')
+
+            send_email(new_user)
+
             return render(request, 'register_done.html', {'new_user': new_user})
     else:
         user_form = UserRegistrationForm()
@@ -54,4 +65,3 @@ def logout_account(request):
 @login_required
 def dashboard(request):
     return render(request, 'dashboard.html', {'section': 'dashboard'})
-
