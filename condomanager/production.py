@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
-#    'accounts',
+    #    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -71,7 +71,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'condomanager.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -150,4 +149,4 @@ LOGOUT_URL = 'logout_account'
 
 AZURE_COMM_SRV_CONN_STR = os.environ['AZURE_COMM_SRV_CONN_STR']
 
-EMAIL_BACKEND = 'condomanager.email.AzureCustomEmailBackend'
+# EMAIL_BACKEND = 'condomanager.email.AzureCustomEmailBackend'
