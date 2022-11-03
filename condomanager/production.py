@@ -149,4 +149,4 @@ LOGOUT_URL = 'logout_account'
 
 AZURE_COMM_SRV_CONN_STR = os.environ['AZURE_COMM_SRV_CONN_STR']
 
-# EMAIL_BACKEND = 'condomanager.email.AzureCustomEmailBackend'
+REGISTERED_EMAIL_SENDER = os.environ['REGISTERED_EMAIL_SENDER']
