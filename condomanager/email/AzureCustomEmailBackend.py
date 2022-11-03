@@ -6,12 +6,13 @@ from django.conf import settings
 
 class AzureCustomEmailBackend(BaseEmailBackend):
 
-    connection_string = settings.EMAIL_BACKEND
-    print('ron ' + connection_string)
-    client = EmailClient.from_connection_string(connection_string)
+    connection_string = settings.AZURE_COMM_SRV_CONN_STR
 
     def send_messages(self, email_messages):
+        if self.connection_string != '':
+            client = EmailClient.from_connection_string(self.connection_string)
         for msg in email_messages:
-            msg.send()
+            client.send(msg)
+
 
 
