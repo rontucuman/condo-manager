@@ -138,4 +138,6 @@ LOGIN_REDIRECT_URL = 'dashboard'
 LOGIN_URL = 'login_account'
 LOGOUT_URL = 'logout_account'
 
+AZURE_COMM_SRV_CONN_STR = ''
+
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
