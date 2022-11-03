@@ -1,8 +1,5 @@
-from azure.communication.email import EmailContent, EmailAddress
-from django.core.mail import EmailMessage
-from condomanager.email import AzureCustomEmailBackend
+from azure.communication.email import EmailClient, EmailMessage, EmailContent, EmailAddress, EmailRecipients
 from django.conf import settings
-from django.core import mail
 
 
 class SingleAzureEmailSender:
@@ -11,13 +8,21 @@ class SingleAzureEmailSender:
     connection_string = settings.AZURE_COMM_SRV_CONN_STR
 
     def send_message(self, email_message):
-        content = EmailContent(
-            subject=self.subject,
-            plain_text='this is the body',
-            html='<html><h1>This is the body</h1></html>'
-        )
+        if self.connection_string != '':
+            client = EmailClient.from_connection_string(conn_str=self.connection_string)
+            content = EmailContent(
+                subject=self.subject,
+                plain_text='this is the body',
+                html='<html><h1>This is the body</h1></html>'
+            )
 
-        address = EmailAddress(email='donotreplay@condo-manager.com', display_name='Condo Manager Admin')
+            address = EmailAddress(email='ronald.tucuman@outlook.com', display_name='RonTucumanTest01')
 
-        
+            message = EmailMessage(
+                sender='donotreplay@condo-manager.com',
+                content=content,
+                recipients=EmailRecipients(to=[address])
+            )
+
+            response = client.send(message)
 
