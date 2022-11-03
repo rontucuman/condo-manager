@@ -1,19 +1,6 @@
 {% extends 'email_base.html' %}
 {% block content %}
-    <div class="row mb-3">
-        <div>
-            <h2>Account Successfully Created</h2>
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Account registered</h5>
-                    <p class="card-text">Hello {{ username }}</p>
-                    <p class="card-text">Your account has been successfully created.
-                        You will receive an email when the administrator activate your account.</p>
-                    <p class="card-text">Greetings,<br>
-                        Condo-Manager Admin
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
+    <h2>Account Successfully Created</h2>
+    <p>Hello {{ username }},</p>
+    <p>Your account has been successfully created. You will receive an email when the administrator activate your account.</p>
 {% endblock %}
