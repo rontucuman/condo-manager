@@ -11,8 +11,8 @@ class AzureCustomEmailBackend(BaseEmailBackend):
     def send_messages(self, email_messages):
         if self.connection_string != '':
             client = EmailClient.from_connection_string(self.connection_string)
-        for msg in email_messages:
-            client.send(msg)
+            for msg in email_messages:
+                client.send(msg)
 
 
 
