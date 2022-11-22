@@ -28,6 +28,7 @@ DOMAIN_URL = os.environ['DOMAIN_URL']
 
 ALLOWED_HOSTS = [
     # [DOMAIN_URL]
+    'condo-project-dev.azurewebsites.net',
 ]
 
 INSTALLED_APPS = [
