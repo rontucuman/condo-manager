@@ -24,8 +24,10 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+DOMAIN_URL = os.environ['DOMAIN_URL']
+
 ALLOWED_HOSTS = [
-    'condo-project.azurewebsites.net'
+    [DOMAIN_URL]
 ]
 
 INSTALLED_APPS = [
@@ -69,7 +71,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'condomanager.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -131,7 +132,6 @@ STATIC_ROOT = Path.joinpath(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = Path.joinpath(BASE_DIR, 'media')
 
-DOMAIN_URL = os.environ['DOMAIN_URL']
 CSRF_TRUSTED_ORIGINS = [DOMAIN_URL]
 
 CORS_ALLOWED_ORIGINS = [DOMAIN_URL]

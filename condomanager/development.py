@@ -22,10 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
+
+DOMAIN_URL = os.environ['DOMAIN_URL']
 
 ALLOWED_HOSTS = [
-    os.environ['DOMAIN_URL'],
+    [DOMAIN_URL]
 ]
 
 INSTALLED_APPS = [
@@ -69,7 +71,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'condomanager.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -131,7 +132,6 @@ STATIC_ROOT = Path.joinpath(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = Path.joinpath(BASE_DIR, 'media')
 
-DOMAIN_URL = os.environ['DOMAIN_URL']
 CSRF_TRUSTED_ORIGINS = [DOMAIN_URL]
 
 CORS_ALLOWED_ORIGINS = [DOMAIN_URL]
@@ -141,3 +141,11 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATICFILES_DIRS = [
     BASE_DIR / "condomanager/static",
 ]
+
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGIN_URL = 'login_account'
+LOGOUT_URL = 'logout_account'
+
+AZURE_COMM_SRV_CONN_STR = os.environ['AZURE_COMM_SRV_CONN_STR']
+
+REGISTERED_EMAIL_SENDER = os.environ['REGISTERED_EMAIL_SENDER']
