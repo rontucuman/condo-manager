@@ -22,10 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    'condo-project.azurewebsites.net'
+    os.environ['DOMAIN_URL'],
 ]
 
 INSTALLED_APPS = [
@@ -141,11 +141,3 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATICFILES_DIRS = [
     BASE_DIR / "condomanager/static",
 ]
-
-LOGIN_REDIRECT_URL = 'dashboard'
-LOGIN_URL = 'login_account'
-LOGOUT_URL = 'logout_account'
-
-AZURE_COMM_SRV_CONN_STR = os.environ['AZURE_COMM_SRV_CONN_STR']
-
-REGISTERED_EMAIL_SENDER = os.environ['REGISTERED_EMAIL_SENDER']
