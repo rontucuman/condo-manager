@@ -53,7 +53,16 @@ jobs:
         with:
           name: python-app
           path: .
-          
+      - name: Log in to Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Static collection and set migration command on App Service
+        uses: Azure/appservice-settings@v1
+        with:
+          app-name: 'condo-project'
+          app-settings-json: '[{ "name": "POST_BUILD_COMMAND",  "value": "python manage.py collectstatic --noinput && python manage.py makemigrations && python manage.py migrate" }, { "name": "SCM_DO_BUILD_DURING_DEPLOYMENT", "value": "true" }, { "name": "DJANGO_ENV", "value": "production"}]'
+
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
