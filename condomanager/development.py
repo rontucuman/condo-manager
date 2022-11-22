@@ -27,11 +27,11 @@ DEBUG = True
 DOMAIN_URL = os.environ['DOMAIN_URL']
 
 ALLOWED_HOSTS = [
-    # [DOMAIN_URL]
-    'condo-project-dev.azurewebsites.net',
+    DOMAIN_URL
 ]
 
 INSTALLED_APPS = [
+    'accounts',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
