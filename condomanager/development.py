@@ -27,7 +27,7 @@ DEBUG = True
 DOMAIN_URL = os.environ['DOMAIN_URL']
 
 ALLOWED_HOSTS = [
-    [DOMAIN_URL]
+    # [DOMAIN_URL]
 ]
 
 INSTALLED_APPS = [
