@@ -25,12 +25,14 @@ SECRET_KEY = os.environ['SECRET_KEY']
 DEBUG = True
 
 DOMAIN_URL = os.environ['DOMAIN_URL']
+APP_ALLOWED_HOST = os.environ['APP_ALLOWED_HOST']
 
 ALLOWED_HOSTS = [
-    [DOMAIN_URL]
+    APP_ALLOWED_HOST
 ]
 
 INSTALLED_APPS = [
+    'accounts',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
