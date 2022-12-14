@@ -1,0 +1,61 @@
+{% extends 'base_black1.html' %}
+{% block content %}
+  <div class="row mb-3">
+    <div class="col-lg-6">
+      <h2>Activar Cuentas</h2>
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Lista de Propietarios de Departamentos</h5>
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Usuario</th>
+                <th scope="col">Email</th>
+                <th scope="col">Estado de Cuenta</th>
+              </tr>
+            </thead>
+            <tbody class="table-group-divider">
+              {% for user in users %}
+              <tr>
+                <th scope="row">{{ user.counter }}</th>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" {% if user.is_active %}checked{% endif %}
+                           onchange="updateActiveStatus({{ user.id }})" role="switch" id="switch{{ user.id }}">
+                    <label class="form-check-label" for="switch{{ user.id }}">Esta Activado</label>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    function updateActiveStatus(user_id) {
+      let isChecked = $("#switch" + user_id).prop('checked');
+      $.ajax({
+          type : "POST",
+          url: "{% url "process_active_change" %}",
+          data: {
+              user_id: user_id,
+              is_checked: isChecked,
+              csrfmiddlewaretoken: '{{ csrf_token }}'
+          },
+          success: function (response) {
+              console.log(response);
+          },
+          error: function (response) {
+              console.log('error al guardar');
+          }
+      });
+    };
+  </script>
+{% endblock content %}
