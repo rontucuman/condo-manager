@@ -57,7 +57,7 @@ class AreaComunTests(TestCase):
     
 
     def test_area_comun_registrar_respuesta(self):
-        response = self.client.get("/area_comun/registrar")
+        response = self.client.get("/area_comun/registrar/")
         print(response)
         self.assertEqual(response.status_code, 200)
     
