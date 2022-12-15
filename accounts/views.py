@@ -65,7 +65,7 @@ def register_user(request):
         user_form = UserRegistrationForm()
     return render(request, 'register_user.html', {'form': user_form})
 
-
+@login_required()
 def logout_account(request):
     logout(request)
     return redirect('register_user')
