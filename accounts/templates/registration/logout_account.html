@@ -1,13 +1,13 @@
-{% extends 'base.html' %}
+{% extends 'base_black1.html' %}
 {% block content %}
 <div class="row mb-3">
     <div>
-        <h2>Log out</h2>
+        <h2>Sesion terminada</h2>
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Logged out</h5>
-                <p class="card-text">You have been successfully logged out.
-                    You can <a href="{% url 'login_account' %}"> log-in again</a>.
+                <h5 class="card-title">Sesion terminada</h5>
+                <p class="card-text">Su sesion fue terminada.
+                    Usted puede <a href="{% url 'login_account' %}"> acceder nuevamente</a>.
                 </p>
             </div>
         </div>

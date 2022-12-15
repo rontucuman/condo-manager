@@ -40,7 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+<<<<<<< Updated upstream
 #    'accounts',
+=======
+    'area_comun',
+>>>>>>> Stashed changes
 ]
 
 MIDDLEWARE = [
