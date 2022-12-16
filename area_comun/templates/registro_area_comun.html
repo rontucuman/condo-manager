@@ -1,0 +1,28 @@
+{% extends 'base_black1.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-6 offset-0">
+        <h2>Registrar - Area Comun</h2>
+        <div class="card">
+            <div class="card-body">
+                <form action="{% url 'registrar_area_comun' %}" method="post">
+                    {% csrf_token %}
+                    {% for form_field in area_comun_form %}
+                        <div class="mb-3">
+                            {% for error in form_field.errors %}
+                                <li><strong>{{ form_field.label }}:</strong> {{ error }}</li>
+                            {% endfor %}
+                            <label for="{{ form_field.id_for_label }}" class="form-label">{{ form_field.label }}</label>
+                            <input id="{{ form_field.id_for_label }}" class="form-control" type="{{ form_field.widget_type }}" name="{{ form_field.name }}">
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary">
+                        Registrar
+                    </button>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
