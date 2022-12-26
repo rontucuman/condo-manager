@@ -76,6 +76,11 @@
                         <a class="nav-link" href="{% url 'registrar_area_comun' %}">Registrar Area Comun</a>
                       </li>
                     {% endif %}
+                    {% if request.user|in_group:"admin-edif" or request.user|in_group:"prop-dept" %}
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'list_reservations' %}">Mostrar Reservas</a>
+                      </li>
+                    {% endif %}
                     <li class="nav-item">
                       <a class="nav-link" href="{% url 'logout_account' %}">Cerrar sesion {{ user.username }}</a>
                     </li>

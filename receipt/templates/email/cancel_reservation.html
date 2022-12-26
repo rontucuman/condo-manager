@@ -1,0 +1,10 @@
+{% extends 'email_base.html' %}
+{% block content %}
+    <h2>Reserva Cancelada</h2>
+    <p>Hola {{ username }},</p>
+    <p>La siguiente reserva de area comun ha sido cancelada.</p>
+    <p>Reservado por: {{ reservation.username }}<br>
+    Area comun: {{ reservation.common_area_name }}<br>
+    Fecha inicio: {{ reservation.begin_reservation_date }}<br>
+    Fecha fin: {{ reservation.end_reservation_date }}</p>
+{% endblock %}
