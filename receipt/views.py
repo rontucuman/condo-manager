@@ -1,11 +1,15 @@
+from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.template.loader import render_to_string
+from django.template.loader import render_to_string, get_template
 from django.utils.html import strip_tags
+from xhtml2pdf import pisa
 
 from condomanager.email.SingleAzureEmailSender import SingleAzureEmailSender
 from receipt.Reservation import Reservation
+
+import os
 
 
 # Create your views here.
@@ -53,7 +57,7 @@ def confirm_reservation(request):
             # user = User.objects.filter(id=user_id).first()
             # user.is_active = is_checked
             # user.save()
-
+            generate_pdf(request, reservation_id)
             send_email(request.user, 'confirm_reservation', reservation)
             return HttpResponse(f"La reserva del area comun ha sido confirmada")
         except:
@@ -112,3 +116,23 @@ def send_email(user, operation, reservation):
             content_plain=plain_message,
             content_html=html_message,
             mail_to=mail_to)
+
+
+def generate_pdf(request, reservation_id):
+    filename = f'test{reservation_id}.pdf'
+    path = os.path.join(settings.STATICFILES_DIRS[0], 'receipts/')
+
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    filepath = os.path.join(path, filename)
+    dest = open(filepath, 'w+b')
+    template = get_template('receipts/pdf_template.html')
+    html = template.render()
+    result = pisa.CreatePDF(
+        html,
+        dest=dest,
+    )
+    print(result.pathDocument)
+    # return HttpResponse(result)
+    pass
