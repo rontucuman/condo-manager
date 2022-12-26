@@ -52,12 +52,12 @@ def confirm_reservation(request):
             reservation.common_area_name = f"common area name {reservation_id}"
             reservation.begin_reservation_date = reservation_id
             reservation.end_reservation_date = reservation_id
-            # reservation.amount = 10 * i
+            reservation.amount = 100
             # print("reserva confirmada " + reservation_id)
             # user = User.objects.filter(id=user_id).first()
             # user.is_active = is_checked
             # user.save()
-            generate_pdf(request, reservation_id)
+            generate_pdf(request, reservation)
             send_email(request.user, 'confirm_reservation', reservation)
             return HttpResponse(f"La reserva del area comun ha sido confirmada")
         except:
@@ -118,8 +118,8 @@ def send_email(user, operation, reservation):
             mail_to=mail_to)
 
 
-def generate_pdf(request, reservation_id):
-    filename = f'test{reservation_id}.pdf'
+def generate_pdf(request, reservation):
+    filename = f'receipt_{reservation.reservation_id}.pdf'
     path = os.path.join(settings.STATICFILES_DIRS[0], 'receipts/')
 
     if not os.path.exists(path):
@@ -127,12 +127,12 @@ def generate_pdf(request, reservation_id):
 
     filepath = os.path.join(path, filename)
     dest = open(filepath, 'w+b')
-    template = get_template('receipts/pdf_template.html')
-    html = template.render()
+    template = get_template('receipts/pdf_template1.html')
+    context = {'data': reservation}
+    html = template.render(context)
     result = pisa.CreatePDF(
         html,
         dest=dest,
     )
-    print(result.pathDocument)
-    # return HttpResponse(result)
-    pass
+    # print(result.pathDocument)
+    return HttpResponse(result.error)
