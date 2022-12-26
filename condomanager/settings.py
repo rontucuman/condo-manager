@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'area_comun',
+    'receipt',
 ]
 
 MIDDLEWARE = [
