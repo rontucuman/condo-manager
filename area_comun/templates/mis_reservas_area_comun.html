@@ -1,0 +1,36 @@
+{% extends 'base_black1.html' %}
+{% block content %}
+<div class="row mb-3">
+    <div class="col-lg-6">
+      <h2>Mis reservas - Areas Comunes</h2>
+      <div class="card">
+        <div class="card-body">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Costo</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Confirmado?</th>
+              </tr>
+            </thead>
+            <tbody class="table-group-divider">
+              {% for reserva in mis_reservas %}
+              <tr>
+                <td>{{ reserva.area_comun.nombre }}</td>
+                <td>{{ reserva.area_comun.costo }}</td>
+                <td>{{ reserva.fecha }}</td>
+                {% if reserva.confirmada == 0 %}
+                  <td>Pendiente</td>
+                {% else %}
+                  <td>Reserva Confirmada</td>
+                {% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
