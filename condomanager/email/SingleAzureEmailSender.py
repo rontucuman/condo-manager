@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 
 import base64
+import os
 
 
 class SingleAzureEmailSender:
@@ -52,9 +53,13 @@ class SingleAzureEmailSender:
 
             address = EmailAddress(email=mail_to)
 
+            if os.path.exists(filepath):
+                print('email pdf existe')
+                print(filepath)
+
             with open(filepath, 'r') as file:
                 file_contents = file.read()
-            print('archivo pdf abierto')
+            print('email archivo pdf abierto')
             file_bytes_64 = base64.b64encode(bytes(file_contents, 'utf-8'))
             print('convertido a base 64')
             print(file_bytes_64)
