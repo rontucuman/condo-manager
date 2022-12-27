@@ -131,19 +131,19 @@ def send_email(user, command, receipt, filepath):
         plain_message = strip_tags(html_message)
         mail_to = user.email
         email_sender = SingleAzureEmailSender()
-        print('path del archivo pdf')
-        print(filepath)
-        if os.path.exists(filepath):
-            print('existe el archivo pdf')
-            email_sender.send_message_attachment(
-                subject=subject,
-                content_plain=plain_message,
-                content_html=html_message,
-                mail_to=mail_to,
-                filepath=filepath)
-        else:
-            print('no existe el archivo pdf')
-            email_sender.send_message(
+        # print('path del archivo pdf')
+        # print(filepath)
+        # if os.path.exists(filepath):
+        #     print('existe el archivo pdf')
+        #     email_sender.send_message_attachment(
+        #         subject=subject,
+        #         content_plain=plain_message,
+        #         content_html=html_message,
+        #         mail_to=mail_to,
+        #         filepath=filepath)
+        # else:
+        #     print('no existe el archivo pdf')
+        email_sender.send_message(
                 subject=subject,
                 content_plain=plain_message,
                 content_html=html_message,
@@ -169,5 +169,7 @@ def generate_pdf(request, receipt):
         html,
         dest=dest,
     )
+
+    dest.close()
 
     return filepath
