@@ -73,9 +73,22 @@
                         <a class="nav-link" role="button" href="{% url 'activate_acct' %}">Activar cuentas</a>
                       </li>
                       <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lista_areas_comunes' %}">Lista de Areas Comunes</a>
+                      </li>
+                      <li class="nav-item">
                         <a class="nav-link" href="{% url 'registrar_area_comun' %}">Registrar Area Comun</a>
                       </li>
                     {% endif %}
+
+                    {% if request.user|in_group:"prop-dept" %}
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lista_areas_comunes' %}">Lista de Areas Comunes</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'mis_reservas_area_comun' %}">Mis Reservas</a>
+                      </li>
+                    {% endif %}
+
                     <li class="nav-item">
                       <a class="nav-link" href="{% url 'logout_account' %}">Cerrar sesion {{ user.username }}</a>
                     </li>

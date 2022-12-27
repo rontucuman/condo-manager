@@ -1,0 +1,35 @@
+{% extends 'base_black1.html' %}
+{% block content %}
+<div class="row mb-3">
+    <div class="col-lg-6">
+      <h2>Lista de Areas Comunes</h2>
+      <div class="card">
+        <div class="card-body">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Costo</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody class="table-group-divider">
+              {% for area_comun in lista_areas_comunes %}
+              <tr>
+                <td>{{ area_comun.nombre }}</td>
+                
+                <td>{{ area_comun.costo }}</td>
+                <td>
+                    <a href="{% url 'reservar_area_comun' area_comun.id %}">
+                        <button class="btn btn-primary"> Ver </button>
+                    </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

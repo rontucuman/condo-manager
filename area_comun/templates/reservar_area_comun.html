@@ -1,0 +1,45 @@
+{% extends 'base_black1.html' %}
+{% block content %}
+<div class="row mb-3">
+    <div class="col-lg-6">
+      <h2>Area Comun - {{ area_comun.nombre }}</h2>
+      <div class="card">
+        <div class="card-body">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Descripcion</th>
+                <th scope="col">Mobiliario</th>
+                <th scope="col">Costo</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody class="table-group-divider">
+              <tr>
+                <td>{{ area_comun.nombre }}</td>
+                <td>{{ area_comun.descripcion }}</td>
+                <td>{{ area_comun.mobiliario }}</td>
+                <td>{{ area_comun.costo }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form action="{% url 'reservar_area_comun' area_comun.id %}" method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+          {% for error in reserva_area_comun.fecha.errors %}
+              <li><strong>{{ reserva_area_comun.fecha.label }}:</strong> {{ error }}</li>
+          {% endfor %}
+          <label for="{{ reserva_area_comun.fecha.id_for_label }}" class="form-label">{{ reserva_area_comun.fecha.label }}</label>
+          {{ reserva_area_comun.fecha }}
+      </div>
+    <button type="submit" class="btn btn-primary">
+        Reservar
+    </button>
+</form>
+  
+{% endblock content %}
