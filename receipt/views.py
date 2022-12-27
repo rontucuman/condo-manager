@@ -77,7 +77,7 @@ def confirm_reservation(request):
             receipt.save()
 
             file_path = generate_pdf(request, receipt)
-            send_email(request, 'confirm_reservation', receipt, file_path)
+            send_email(receipt.user, 'confirm_reservation', receipt, file_path)
             return HttpResponse(f"La reserva del area comun ha sido confirmada")
         except:
             return HttpResponse("No se pudo confirmar reserva. Intentelo nuevamente.")
@@ -114,7 +114,7 @@ def cancel_reservation(request):
         return HttpResponse("No se pudo cancelar reserva. Intentelo nuevamente.")
 
 
-def send_email(request, command, receipt, filepath):
+def send_email(user, command, receipt, filepath):
     subject = ''
     template_name = ''
 
@@ -127,9 +127,9 @@ def send_email(request, command, receipt, filepath):
 
     if subject != '':
         html_message = render_to_string(template_name,
-                                        {'user': request.user, 'receipt': receipt})
+                                        {'user': user, 'receipt': receipt})
         plain_message = strip_tags(html_message)
-        mail_to = request.user.email
+        mail_to = user.email
         email_sender = SingleAzureEmailSender()
 
         # if os.path.exists(filepath):
