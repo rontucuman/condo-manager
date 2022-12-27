@@ -59,21 +59,21 @@ class SingleAzureEmailSender:
 
             with open(filepath, 'r') as file:
                 file_contents = file.read()
-            print('email archivo pdf abierto')
+            # print('email archivo pdf abierto')
             file_bytes_64 = base64.b64encode(bytes(file_contents, 'utf-8'))
-            print('convertido a base 64')
+            # print('convertido a base 64')
             print(file_bytes_64)
             attachment = EmailAttachment(
                 name='receipt.pdf',
                 attachment_type=EmailAttachmentType.PDF,
                 content_bytes_base64=file_bytes_64)
-            print('objeto attachment creado')
+            # print('objeto attachment creado')
             message = EmailMessage(
                 sender=self.email_sender,
                 content=content,
                 recipients=EmailRecipients(to=[address]),
                 attachments=[attachment]
             )
-            print('objeto message creado')
+            # print('objeto message creado')
             client.send(message)
-            print('email enviado')
+            # print('email enviado')
