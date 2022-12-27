@@ -57,8 +57,8 @@ def confirm_reservation(request):
             # user = User.objects.filter(id=user_id).first()
             # user.is_active = is_checked
             # user.save()
-            generate_pdf(request, reservation)
-            send_email(request.user, 'confirm_reservation', reservation)
+            file_path = generate_pdf(request, reservation)
+            send_email(request.user, 'confirm_reservation', reservation, file_path)
             return HttpResponse(f"La reserva del area comun ha sido confirmada")
         except:
             return HttpResponse("No se pudo confirmar reserva. Intentelo nuevamente.")
@@ -95,7 +95,7 @@ def cancel_reservation(request):
         return HttpResponse("No se pudo cancelar reserva. Intentelo nuevamente.")
 
 
-def send_email(user, operation, reservation):
+def send_email(user, operation, reservation, file_path):
     subject = ''
     template_name = ''
 
@@ -111,11 +111,25 @@ def send_email(user, operation, reservation):
         plain_message = strip_tags(html_message)
         mail_to = user.email
         email_sender = SingleAzureEmailSender()
-        email_sender.send_message(
-            subject=subject,
-            content_plain=plain_message,
-            content_html=html_message,
-            mail_to=mail_to)
+
+        if os.path.exists(file_path):
+            attachment = open(file_path, 'r')
+            attachment_bytes = attachment.read()
+            print(attachment_bytes)
+            attachment.close()
+
+            email_sender.send_message_attachment(
+                subject=subject,
+                content_plain=plain_message,
+                content_html=html_message,
+                mail_to=mail_to,
+                attachment_path=file_path)
+        else:
+            email_sender.send_message(
+                subject=subject,
+                content_plain=plain_message,
+                content_html=html_message,
+                mail_to=mail_to)
 
 
 def generate_pdf(request, reservation):
@@ -134,5 +148,5 @@ def generate_pdf(request, reservation):
         html,
         dest=dest,
     )
-    # print(result.pathDocument)
-    return HttpResponse(result.error)
+
+    return filepath
