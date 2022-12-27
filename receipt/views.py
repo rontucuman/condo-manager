@@ -133,21 +133,14 @@ def send_email(user, command, receipt, filepath):
         email_sender = SingleAzureEmailSender()
 
         if os.path.exists(filepath):
-            print('recibo de pago encontrado')
-            pdf_file = open(filepath, 'rb')
-            encoded = base64.b64encode(pdf_file.read())
-            print(encoded)
-
-            pdf_file.close()
-        #
-        #     email_sender.send_message_attachment(
-        #         subject=subject,
-        #         content_plain=plain_message,
-        #         content_html=html_message,
-        #         mail_to=mail_to,
-        #         encoded_attachment=encoded)
-        # else:
-        email_sender.send_message(
+            email_sender.send_message_attachment(
+                subject=subject,
+                content_plain=plain_message,
+                content_html=html_message,
+                mail_to=mail_to,
+                filepath=filepath)
+        else:
+            email_sender.send_message(
                 subject=subject,
                 content_plain=plain_message,
                 content_html=html_message,
