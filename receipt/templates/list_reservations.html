@@ -21,7 +21,6 @@
       <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Volver</button>
           <button id="btnCancelModal" type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar Reserva</button>
-{#          <a class="btn btn-danger" role="button" href="#">Cancelar Reserva</a>#}
       </div>
     </div>
   </div>
@@ -91,11 +90,11 @@
                     {% for rsv in reservations %}
                         <div class="col py-2">
                             <div class="card">
-                                <h5 class="card-header">{{ rsv.user_id }} {{ rsv.username }}</h5>
+                                <h5 class="card-header">{{ rsv.username }}</h5>
                                 <div class="card-body">
-                                    <h5 class="card-title">{{ rsv.common_area_id }} {{ rsv.common_area_name }}</h5>
-                                    <p>Inicio: {{ rsv.begin_reservation_date }}<br>
-                                    Fin: {{ rsv.end_reservation_date }}<br>
+                                    <h5 class="card-title">{{ rsv.common_area_name }}</h5>
+                                    <p>Fecha: {{ rsv.begin_reservation_date }}<br>
+{#                                    Fin: {{ rsv.end_reservation_date }}<br>#}
                                     Monto: {{ rsv.amount }}</p>
                                     <p id="status{{ rsv.reservation_id }}">Estado:
                                     {% if rsv.is_canceled %}
@@ -108,11 +107,15 @@
                                         {% endif %}
                                     {% endif %}
                                     </p>
+
                                     <button id="btnConfirmCard{{ rsv.reservation_id }}"
                                             class="btn btn-primary {% if rsv.is_confirmed or rsv.is_canceled %}disabled{% endif %}"
                                             {% if rsv.is_confirmed or rsv.is_canceled %} aria-disabled="true" {% endif %}
                                             type="button"
                                             onclick="confirmReservation({{ rsv.reservation_id }})">Confirmar</button>
+                                    <a id="btnShowReceipt{{ rsv.reservation_id }}" {% if not rsv.is_confirmed %}hidden{% endif %}
+                                       class="btn btn-secondary" role="button"
+                                       href="{% url 'show_pdf' rsv.reservation_id %}" target="_new">Recibo</a>
                                     <button id="btnCancelCard{{ rsv.reservation_id }}"
                                             class="btn btn-danger {% if rsv.is_canceled %}disabled{% endif %}"
                                             {% if rsv.is_canceled %} aria-disabled="true" {% endif %}
@@ -151,6 +154,8 @@
                 statusText.innerText = 'Confirmado';
                 const btnConfirm = document.getElementById('btnConfirmCard'+reservationId);
                 btnConfirm.classList.add('disabled')
+                const btnShowReceipt = document.getElementById('btnShowReceipt'+reservationId);
+                btnShowReceipt.hidden = false
             },
             error: function (response) {
                 console.log(response);

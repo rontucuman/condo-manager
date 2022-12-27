@@ -1,4 +1,5 @@
 from azure.communication.email import EmailClient, EmailMessage, EmailContent, EmailAddress, EmailRecipients
+from azure.communication.email import EmailAttachment, EmailAttachmentType
 from django.conf import settings
 from django.core.mail import send_mail
 
@@ -32,7 +33,7 @@ class SingleAzureEmailSender:
 
             client.send(message)
 
-    def send_message_attachment(self, subject, content_plain, content_html, mail_to, attachment_path):
+    def send_message_attachment(self, subject, content_plain, content_html, mail_to, encoded_attachment):
         if self.connection_string == '':
             send_mail(
                 subject=subject,
@@ -49,10 +50,15 @@ class SingleAzureEmailSender:
 
             address = EmailAddress(email=mail_to)
 
+            attachments = []
+            attachment = EmailAttachment('receipt.pdf', EmailAttachmentType.PDF, encoded_attachment)
+            attachments.append(attachment)
+
             message = EmailMessage(
                 sender=self.email_sender,
                 content=content,
-                recipients=EmailRecipients(to=[address])
+                recipients=EmailRecipients(to=[address]),
+                attachments=attachments
             )
 
             client.send(message)

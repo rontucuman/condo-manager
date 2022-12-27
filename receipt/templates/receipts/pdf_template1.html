@@ -101,15 +101,15 @@
           <tbody>
             <tr>
               <th><h3>Numero de Recibo</h3></th>
-              <td colspan="2">{{ data.reservation_id }}</td>
+              <td colspan="2">{{ data.receipt_number }}</td>
             </tr>
             <tr>
               <th><h3>Fecha de Pago</h3></th>
-              <td colspan="2">{{ data.reservation_id }}</td>
+              <td colspan="2">{{ data.registered_date }}</td>
             </tr>
             <tr>
               <th><h3>Nombre de Usuario</h3></th>
-              <td colspan="2">{{ data.username }}</td>
+              <td colspan="2">{{ data.reservation.propietario.username }}</td>
             </tr>
             <tr>
               <th><h3>Monto Recibido (Bs.)</h3></th>
@@ -117,11 +117,11 @@
             </tr>
             <tr class="no-border-bottom">
               <th><h3>Por Concepto de</h3></th>
-              <td colspan="2">Reserva de area comun "{{ data.common_area_name }}"</td>
+              <td colspan="2">Reserva de area comun "{{ data.common_area.nombre }}"</td>
             </tr>
             <tr class="thick-border-botom">
               <th></th>
-              <td colspan="2">Reservado para la fecha {{ data.begin_reservation_date }}</td>
+              <td colspan="2">Reservado para la fecha {{ data.reservation.fecha }}</td>
             </tr>
           </tbody>
           <tfoot>

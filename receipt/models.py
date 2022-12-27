@@ -1,4 +1,4 @@
-from area_comun.models import AreaComun
+from area_comun.models import AreaComun, ReservaAreaComun
 from django.conf import settings
 from django.db import models
 
@@ -27,6 +27,14 @@ class Receipt(models.Model):
         on_delete=models.SET_NULL,
         verbose_name='Area Comun',
         related_name='commonarea_receipt',
+        blank=True,
+        null=True
+    )
+    reservation = models.ForeignKey(
+        to=ReservaAreaComun,
+        on_delete=models.SET_NULL,
+        verbose_name='Reserva',
+        related_name='reservation_receipt',
         blank=True,
         null=True
     )
