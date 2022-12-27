@@ -64,7 +64,7 @@
             },
             success: function (response) {
                 const statusText = document.getElementById('status'+reservationId);
-                statusText.innerText = 'Cancelado';
+                statusText.innerText = 'Estado: Cancelado';
                 const btnCancel = document.getElementById('btnCancelCard'+reservationId);
                 btnCancel.classList.add('disabled')
                 const btnConfirm = document.getElementById('btnConfirmCard'+reservationId);
