@@ -63,7 +63,7 @@ def confirm_reservation(request):
             reservation_id = request.POST['reservation_id']
             rsv = ReservaAreaComun.objects.filter(id=reservation_id).first()
             rsv.confirmada = True
-            rsv.save()
+            # rsv.save()
             receipt = Receipt()
             receipt.reservation_id = rsv.id
             receipt.registered_date = datetime.datetime.now()
@@ -132,10 +132,13 @@ def send_email(user, command, receipt, filepath):
         mail_to = user.email
         email_sender = SingleAzureEmailSender()
 
-        # if os.path.exists(filepath):
-        #     pdf_file = open(filepath, 'rb')
-        #     encoded = base64.b64encode(pdf_file.read())
-        #     pdf_file.close()
+        if os.path.exists(filepath):
+            print('recibo de pago encontrado')
+            pdf_file = open(filepath, 'rb')
+            encoded = base64.b64encode(pdf_file.read())
+            print(encoded)
+
+            pdf_file.close()
         #
         #     email_sender.send_message_attachment(
         #         subject=subject,
