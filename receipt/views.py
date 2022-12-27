@@ -40,9 +40,16 @@ def list_reservations(request):
     reservations = ReservaAreaComun.objects.all()
     for rsv in reservations:
         reservation = Reservation()
+
+        if Receipt.objects.filter(reservation_id=rsv.id).count() > 0:
+            receipt = Receipt.objects.filter(reservation_id=rsv.id).first()
+            reservation.is_canceled = receipt.is_canceled
+            reservation.receipt_id = receipt.id
+        else:
+            reservation.is_canceled = False
+            reservation.receipt_id = 0
+
         reservation.reservation_id = rsv.id
-        reservation.is_canceled = False
-        reservation.receipt_id = 0
         reservation.is_confirmed = rsv.confirmada
         reservation.user_id = rsv.propietario_id
         reservation.username = rsv.propietario.username
@@ -91,21 +98,15 @@ def cancel_reservation(request):
     if request.method == 'POST':
         try:
             reservation_id = request.POST['reservation_id']
-            reservation = Reservation()
-            reservation.reservation_id = reservation_id
-            reservation.is_canceled = False
-            reservation.receipt_id = reservation_id
-            reservation.is_confirmed = False
-            reservation.user_id = request.user.id
-            reservation.username = request.user.username
-            reservation.common_area_id = reservation_id
-            reservation.common_area_name = f"common area name {reservation_id}"
-            reservation.begin_reservation_date = reservation_id
-            reservation.end_reservation_date = reservation_id
-            # user = User.objects.filter(id=user_id).first()
-            # user.is_active = is_checked
-            # user.save()
-            send_email(request.user, 'cancel_reservation', reservation)
+            rsv = ReservaAreaComun.objects.filter(id=reservation_id).first()
+            rsv.confirmada = False
+            rsv.save()
+
+            receipt = Receipt.objects.filter(reservation_id=reservation_id).first()
+            receipt.is_canceled = True
+            receipt.save()
+
+            send_email(receipt.user, 'cancel_reservation', receipt)
             return HttpResponse(f"La reserva del area comun ha sido cancelada")
         except:
             return HttpResponse("No se pudo cancelar reserva. Intentelo nuevamente.")
@@ -114,7 +115,7 @@ def cancel_reservation(request):
         return HttpResponse("No se pudo cancelar reserva. Intentelo nuevamente.")
 
 
-def send_email(user, command, receipt, filepath):
+def send_email(user, command, receipt, filepath=''):
     subject = ''
     template_name = ''
 
