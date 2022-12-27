@@ -151,7 +151,7 @@
             },
             success: function (response) {
                 const statusText = document.getElementById('status'+reservationId);
-                statusText.innerText = 'Confirmado';
+                statusText.innerText = 'Estado: Confirmado';
                 const btnConfirm = document.getElementById('btnConfirmCard'+reservationId);
                 btnConfirm.classList.add('disabled')
                 const btnShowReceipt = document.getElementById('btnShowReceipt'+reservationId);
