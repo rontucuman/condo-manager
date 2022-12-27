@@ -3,6 +3,8 @@ from azure.communication.email import EmailAttachment, EmailAttachmentType
 from django.conf import settings
 from django.core.mail import send_mail
 
+import base64
+
 
 class SingleAzureEmailSender:
     email_sender = settings.REGISTERED_EMAIL_SENDER
@@ -33,7 +35,7 @@ class SingleAzureEmailSender:
 
             client.send(message)
 
-    def send_message_attachment(self, subject, content_plain, content_html, mail_to, encoded_attachment):
+    def send_message_attachment(self, subject, content_plain, content_html, mail_to, filepath):
         if self.connection_string == '':
             send_mail(
                 subject=subject,
@@ -50,15 +52,21 @@ class SingleAzureEmailSender:
 
             address = EmailAddress(email=mail_to)
 
-            attachments = []
-            attachment = EmailAttachment('receipt.pdf', EmailAttachmentType.PDF, encoded_attachment)
-            attachments.append(attachment)
+            with open(filepath, 'r') as file:
+                file_contents = file.read()
+
+            file_bytes_64 = base64.b64encode(bytes(file_contents, 'utf-8'))
+
+            attachment = EmailAttachment(
+                name='receipt.pdf',
+                attachment_type=EmailAttachmentType.PDF,
+                content_bytes_base64=file_bytes_64)
 
             message = EmailMessage(
                 sender=self.email_sender,
                 content=content,
                 recipients=EmailRecipients(to=[address]),
-                attachments=attachments
+                attachments=[attachment]
             )
 
             client.send(message)
