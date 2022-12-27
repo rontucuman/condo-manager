@@ -63,7 +63,7 @@ def confirm_reservation(request):
             reservation_id = request.POST['reservation_id']
             rsv = ReservaAreaComun.objects.filter(id=reservation_id).first()
             rsv.confirmada = True
-            # rsv.save()
+            rsv.save()
             receipt = Receipt()
             receipt.reservation_id = rsv.id
             receipt.registered_date = datetime.datetime.now()
