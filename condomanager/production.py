@@ -146,7 +146,7 @@ CORS_ALLOWED_ORIGINS = [DOMAIN_URL]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "condomanager/static",
+    Path.joinpath(BASE_DIR, 'static')
 ]
 
 LOGIN_REDIRECT_URL = 'dashboard'
