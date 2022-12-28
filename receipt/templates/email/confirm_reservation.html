@@ -1,13 +1,13 @@
 {% extends 'email_base.html' %}
 {% block content %}
     <h2>Reserva Confirmada</h2>
-    <p>Hola {{ receipt.reservation.propietario.username }},</p>
+    <p>Hola {{ user.username }},</p>
     <p>La siguiente reserva de area comun ha sido confirmada.</p>
     <p>
 {#    <p>Reservado por: {{ receipt.reservation.propietario.username }}<br>#}
     Area comun: {{ receipt.common_area.nombre }}<br>
-    Fecha: {{ receipt.reservation.fecha }}<br>
-    Monto Pagado (Bs.): {{ receipt.amount }}
+    Fecha: {{ receipt.begin_reservation_date }}<br>
+    Monto Pagado (Bs.): {{ receipt.paid_amount }}
 {#    Fecha fin: {{ reservation.end_reservation_date }}#}
     </p>
 {% endblock %}
