@@ -109,11 +109,11 @@
             </tr>
             <tr>
               <th><h3>Nombre de Usuario</h3></th>
-              <td colspan="2">{{ data.reservation.propietario.username }}</td>
+              <td colspan="2">{{ data.user.username }}</td>
             </tr>
             <tr>
               <th><h3>Monto Recibido (Bs.)</h3></th>
-              <td colspan="2">{{ data.amount }}</td>
+              <td colspan="2">{{ data.paid_amount }}</td>
             </tr>
             <tr class="no-border-bottom">
               <th><h3>Por Concepto de</h3></th>
@@ -121,7 +121,7 @@
             </tr>
             <tr class="thick-border-botom">
               <th></th>
-              <td colspan="2">Reservado para la fecha {{ data.reservation.fecha }}</td>
+              <td colspan="2">Reservado para la fecha {{ data.begin_reservation_date }}</td>
             </tr>
           </tbody>
           <tfoot>
