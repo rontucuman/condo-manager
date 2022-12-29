@@ -134,8 +134,7 @@ MEDIA_ROOT = Path.joinpath(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS = [
-    Path.joinpath(BASE_DIR, 'static')
-    # BASE_DIR / "condomanager/static",
+    Path.joinpath(BASE_DIR, 'condomanager/static')
 ]
 
 LOGIN_REDIRECT_URL = 'dashboard'
