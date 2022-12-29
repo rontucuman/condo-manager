@@ -13,9 +13,6 @@ from receipt.Reservation import Reservation
 from receipt.models import Receipt
 from area_comun.models import ReservaAreaComun
 
-from azure.identity import DefaultAzureCredential
-from azure.storage.blob import BlobServiceClient
-
 import os
 import base64
 import uuid
@@ -71,16 +68,6 @@ def list_reservations(request):
             reservation.receipt_filename = 'not found'
 
         data.append(reservation)
-
-    if settings.ENVIRONMENT == 'production':
-        token_credential = DefaultAzureCredential()
-
-        blob_service_client = BlobServiceClient(
-            account_url='https://condoprojectstorage.blob.core.windows.net/',
-            credential=token_credential
-        )
-
-        print(blob_service_client.get_service_stats())
 
     return render(request, 'list_reservations.html', {'reservations': data})
 
