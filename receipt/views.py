@@ -26,6 +26,9 @@ def show_pdf(request, doc='none'):
     filepath = os.path.join(path, filename)
 
     if settings.ENVIRONMENT == 'production' and not os.path.exists(filepath):
+        if not os.path.exists(path):
+            os.makedirs(path)
+
         blob_manager = AzureBlobManager()
         blob_manager.download_file(filename=filename, dest_folder=path)
 
