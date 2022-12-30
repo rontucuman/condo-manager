@@ -146,3 +146,7 @@ AZURE_COMM_SRV_CONN_STR = ''
 REGISTERED_EMAIL_SENDER = 'admin@condo-manager.com'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+AZURE_STORAGE_CONN_STR = ''
+AZURE_STORAGE_CONTAINER = ''
+

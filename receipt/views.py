@@ -1,32 +1,36 @@
 import datetime
+import os
+import uuid
 
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, FileResponse
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string, get_template
 from django.utils.html import strip_tags
 from xhtml2pdf import pisa
 
+from area_comun.models import ReservaAreaComun
 from condomanager.email.SingleAzureEmailSender import SingleAzureEmailSender
+from condomanager.tools.AzureBlobManager import AzureBlobManager
 from receipt.Reservation import Reservation
 from receipt.models import Receipt
-from area_comun.models import ReservaAreaComun
-
-import os
-import base64
-import uuid
 
 
 # Create your views here.
 
 @login_required
 def show_pdf(request, doc='none'):
-    if settings.ENVIRONMENT == 'local':
-        path = os.path.join(settings.STATICFILES_DIRS[0], 'receipts/')
-        filepath = os.path.join(path, doc)
-        if os.path.exists(filepath):
-            return FileResponse(open(filepath, 'rb'), content_type='application/pdf', filename=doc)
+    filename = doc
+    path = os.path.join(settings.STATICFILES_DIRS[0], 'receipts/')
+    filepath = os.path.join(path, filename)
+
+    if settings.ENVIRONMENT == 'production' and not os.path.exists(filepath):
+        blob_manager = AzureBlobManager()
+        blob_manager.download_file(filename=filename, dest_folder=path)
+
+    if os.path.exists(filepath):
+        return FileResponse(open(filepath, 'rb'), content_type='application/pdf', filename=filename)
 
     return HttpResponse("El recibo no fue encontrado")
 
@@ -188,5 +192,9 @@ def generate_pdf(request, receipt):
     )
 
     dest.close()
+
+    if settings.ENVIRONMENT == 'production':
+        blob_manager = AzureBlobManager()
+        blob_manager.upload_file(filename=filename, src_folder=path, content_type='application/pdf')
 
     return filename
