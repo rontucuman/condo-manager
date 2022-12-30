@@ -21,19 +21,19 @@ from receipt.models import Receipt
 
 @login_required
 def show_pdf(request, doc='none'):
-    filename = doc
-    path = os.path.join(settings.STATICFILES_DIRS[0], 'receipts/')
-    filepath = os.path.join(path, filename)
+    receipt_filename = doc
+    receipts_path = os.path.join(settings.STATICFILES_DIRS[0], 'receipts/')
+    receipt_filepath = os.path.join(receipts_path, receipt_filename)
 
-    if settings.ENVIRONMENT == 'production' and not os.path.exists(filepath):
-        if not os.path.exists(path):
-            os.makedirs(path)
+    if not os.path.exists(receipts_path):
+        os.makedirs(receipts_path)
 
+    if settings.ENVIRONMENT == 'production' and not os.path.exists(receipt_filepath):
         blob_manager = AzureBlobManager()
-        blob_manager.download_file(filename=filename, dest_folder=path)
+        blob_manager.download_file(filename=receipt_filename, dest_folder=receipts_path)
 
-    if os.path.exists(filepath):
-        return FileResponse(open(filepath, 'rb'), content_type='application/pdf', filename=filename)
+    if os.path.exists(receipt_filepath):
+        return FileResponse(open(receipt_filepath, 'rb'), content_type='application/pdf', filename=receipt_filename)
 
     return HttpResponse("El recibo no fue encontrado")
 
@@ -175,14 +175,14 @@ def send_email(command, receipt, filename=''):
 
 
 def generate_pdf(request, receipt):
-    filename = f'receipt_{uuid.uuid4()}.pdf'
-    path = os.path.join(settings.STATICFILES_DIRS[0], 'receipts/')
+    receipt_filename = f'receipt_{uuid.uuid4()}.pdf'
+    receipts_path = os.path.join(settings.STATICFILES_DIRS[0], 'receipts/')
 
-    if not os.path.exists(path):
-        os.makedirs(path)
+    if not os.path.exists(receipts_path):
+        os.makedirs(receipts_path)
 
-    filepath = os.path.join(path, filename)
-    dest = open(filepath, 'w+b')
+    receipt_filepath = os.path.join(receipts_path, receipt_filename)
+    dest = open(receipt_filepath, 'w+b')
     template = get_template('receipts/pdf_template1.html')
     context = {
         'data': receipt,
@@ -198,6 +198,6 @@ def generate_pdf(request, receipt):
 
     if settings.ENVIRONMENT == 'production':
         blob_manager = AzureBlobManager()
-        blob_manager.upload_file(filename=filename, src_folder=path, content_type='application/pdf')
+        blob_manager.upload_file(filename=receipt_filename, src_folder=receipts_path, content_type='application/pdf')
 
-    return filename
+    return receipt_filename
