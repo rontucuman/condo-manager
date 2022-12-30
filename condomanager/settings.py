@@ -134,8 +134,7 @@ MEDIA_ROOT = Path.joinpath(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS = [
-    Path.joinpath(BASE_DIR, 'static')
-    # BASE_DIR / "condomanager/static",
+    Path.joinpath(BASE_DIR, 'condomanager/static')
 ]
 
 LOGIN_REDIRECT_URL = 'dashboard'
@@ -147,3 +146,7 @@ AZURE_COMM_SRV_CONN_STR = ''
 REGISTERED_EMAIL_SENDER = 'admin@condo-manager.com'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+AZURE_STORAGE_CONN_STR = ''
+AZURE_STORAGE_CONTAINER = ''
+
