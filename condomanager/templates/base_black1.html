@@ -17,6 +17,16 @@
   <script src="https://code.jquery.com/jquery-3.6.1.min.js"
             integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
             crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+          integrity="sha256-BRqBN7dYgABqtY9Hd4ynE+1slnEw+roEPFzQ7TRRfcg="
+          crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.2.10/dist/js/tempus-dominus.min.js"
+          crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.2.10/dist/css/tempus-dominus.min.css"
+        crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/gh/Eonasdan/tempus-dominus@master/dist/js/jQuery-provider.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/solid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/fontawesome.min.js"></script>
   <link rel="stylesheet" href="{% static 'css/base.css' %}">
   <title>Condo Manager</title>
 </head>
@@ -79,7 +89,9 @@
                         <a class="nav-link" href="{% url 'registrar_area_comun' %}">Registrar Area Comun</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" href="{% url 'list_reservations' %}">Mostrar Reservas</a>
+                        <a class="nav-link" href="{% url 'list_reservations2' %}">Mostrar Reservas</a>
+{#                        <a class="nav-link" href="{% url 'list_reservations1' %}">Mostrar Reservas</a>#}
+{#                        <a class="nav-link" href="{% url 'list_reservations' '1' '10' %}">Mostrar Reservas</a>#}
                       </li>
                     {% endif %}
 

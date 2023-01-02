@@ -1,0 +1,292 @@
+{% extends 'base_black1.html' %}
+{% block content %}
+
+<!-- Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="cancelModalLabel">Cancelar Reserva</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <p>Reservado por: <span id="usernameModal"></span><br>
+          Area comun: <span id="commonAreaModal"></span><br>
+          Fecha: <span id="beginModal"></span><br>
+{#          Fecha fin: <span id="endModal"></span></p>#}
+            <p><em><strong>Esta accion no se puede deshacer. Esta seguro?</strong></em></p>
+          <input type="hidden" id="reservationId">
+          <input type="hidden" id="receiptId">
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Volver</button>
+          <button id="btnCancelModal" type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar Reserva</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal Script-->
+<script>
+    const cancelModal = document.getElementById('cancelModal')
+    cancelModal.addEventListener('show.bs.modal', event => {
+        // Button that triggered the modal
+        const button = event.relatedTarget
+        // Extract info from data-bs-* attributes
+        const username = button.getAttribute('data-bs-username')
+        const commonAreaName = button.getAttribute('data-bs-commonareaname')
+        const beginDate = button.getAttribute('data-bs-begindate')
+        const endDate = button.getAttribute('data-bs-enddate')
+        const reservationId = button.getAttribute('data-bs-reservationid')
+        const btnCancelModal = document.getElementById('btnCancelModal')
+        btnCancelModal.onclick = function (){ cancelReservation(reservationId) }
+        // If necessary, you could initiate an AJAX request here
+        // and then do the updating in a callback.
+        //
+        // Update the modal's content.
+        const usernameModal = document.getElementById('usernameModal')
+        usernameModal.innerText = username
+        const commonAreaModal = document.getElementById('commonAreaModal')
+        commonAreaModal.innerText = commonAreaName
+        const beginModal = document.getElementById('beginModal')
+        beginModal.innerText = beginDate
+        {#const endModal = document.getElementById('endModal')#}
+        {#endModal.innerText = endDate#}
+    })
+
+    function cancelReservation(reservationId) {
+        $.ajax({
+            type : "POST",
+            url: "{% url "cancel_reservation" %}",
+            data: {
+                reservation_id: reservationId,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function (response) {
+                const statusText = document.getElementById('status'+reservationId);
+                statusText.innerText = 'Cancelado';
+                const btnCancel = document.getElementById('btnCancelCard'+reservationId);
+                btnCancel.classList.add('disabled')
+                const btnConfirm = document.getElementById('btnConfirmCard'+reservationId);
+                btnConfirm.classList.add('disabled')
+                const btnShowReceipt = document.getElementById('btnShowReceipt'+reservationId);
+                btnShowReceipt.hidden = true
+            },
+            error: function (response) {
+                console.log(response);
+            }
+         })
+    }
+</script>
+
+<div class="row">
+    <div class="col-lg-12">
+        <h2>Lista de Reservas</h2>
+        <div class="card">
+            <div class="card-body">
+{#                <h5 class="card-title">Acceder</h5>#}
+                <div class="container mb-4">
+                    <div class="row justify-content-between">
+                        <div class="col">
+                            <div class="row justify-content-start">
+                                <div class="col-auto">
+                                    <label class="col-form-label" for="numItems"># de Reservas:</label>
+                                </div>
+                                <div class="col">
+                                    <select class="form-select w-auto" name="numItems" id="numItems">
+                                      <option value="5">5</option>
+                                      <option selected value="10">10</option>
+                                      <option value="15">15</option>
+                                      <option value="20">20</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+{#                        <button id="cleanFilters" type="button" class="btn btn-primary">Limpiar Filtros</button>#}
+                            <a class="btn btn-primary" href="{% url 'list_reservations2' %}">Limpiar Filtros</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive-xxl">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th style="text-align: right;">#</th>
+                                <th scope="col">
+                                    Reservado por
+                                    <select class="form-select" id="filter_username" name="filter_username">
+                                    {% for key, value in usernames.items %}
+                                        <option value="{{ value }}">{{ key }}</option>
+                                    {% endfor %}
+                                    </select>
+                                </th>
+                                <th scope="col">
+                                    Area Comun
+                                    <select class="form-select" id="filter_common_area_name" name="filter_common_area_name">
+                                    {% for key, value in common_area_names.items %}
+                                        <option value="{{ value }}">{{ key }}</option>
+                                    {% endfor %}
+                                    </select>
+                                </th>
+                                <th style="max-width: 170px" scope="col">
+                                    Fecha Reservada
+                                    <div class="input-group" id="datetimepicker1" data-td-target-input="nearest"
+                                        data-td-target-toggle="nearest">
+                                        <input style="max-width: 110px;" id="datetimepicker1Input" type="text" class="form-control"
+                                          data-td-target="#datetimepicker1"/>
+                                        <span class="input-group-text" data-td-target="#datetimepicker1"
+                                          data-td-toggle="datetimepicker">
+                                          <span class="fas fa-calendar"></span>
+                                        </span>
+                                      </div>
+                                </th>
+                                <th style="max-width: 50px; text-align: right;" scope="col">Monto</th>
+                                <th style="max-width: 120px;" scope="col">
+                                    Estado
+                                    <select class="form-select" id="filter_status" name="filter_status">
+                                    {% for key, value in status.items %}
+                                        <option value="{{ value }}">{{ key }}</option>
+                                    {% endfor %}
+                                    </select>
+                                </th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableData">
+
+                        </tbody>
+                    </table>
+                    <nav aria-label="Page navigation example">
+                        <ul id="paginationNavigation" class="pagination justify-content-center">
+
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        getReservationsContent(10, 1);
+    });
+
+    function paginationAction(numItems, page) {
+        getReservationsContent(numItems, page);
+    }
+
+    $('#numItems').change(function() {
+        getReservationsContent($(this).val(), 1);
+    });
+
+    $('#datetimepicker1Input').change(function () {
+        console.log($(this).val())
+        filter();
+    });
+
+    {#$('#datetimepicker1').close(function () {#}
+    {#    console.log('closed')#}
+    {#)#}
+
+    $('#filter_username').change(function() {
+        filter();
+    });
+
+    $('#filter_common_area_name').change(function () {
+        filter();
+    });
+
+    $('#filter_status').change(function () {
+        filter();
+    });
+
+    function filter() {
+        const numItems = $('#numItems').val();
+        const page = 1;
+        getReservationsContent(numItems, page);
+    }
+
+    function getReservationsContent(numItems, page) {
+        const filter_username = $('#filter_username').val();
+        const filter_common_area_name = $('#filter_common_area_name').val();
+        const filter_status = $('#filter_status').val();
+        const filter_begin_reservation_date = $('#datetimepicker1Input').val();
+
+        $.ajax({
+            type: 'GET',
+            url: '{% url 'get_reservations_content' %}',
+            data: {
+                num_items: numItems,
+                page: page,
+                filter_username: filter_username,
+                filter_common_area_name: filter_common_area_name,
+                filter_begin_reservation_date: filter_begin_reservation_date,
+                filter_status: filter_status,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function (response) {
+                $('#tableData').html(response)
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
+        $.ajax({
+           type: 'GET',
+           url: '{% url 'get_pagination_content' %}',
+           data: {
+               num_items: numItems,
+               page: page,
+               filter_username: filter_username,
+               filter_common_area_name: filter_common_area_name,
+               filter_begin_reservation_date: filter_begin_reservation_date,
+               filter_status: filter_status,
+               csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function (response) {
+                $('#paginationNavigation').html(response)
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
+    }
+
+    function confirmReservation(reservationId) {
+        $.ajax({
+            type : "POST",
+            url: "{% url "confirm_reservation" %}",
+            data: {
+                reservation_id: reservationId,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function (response) {
+                const statusText = document.getElementById('status'+reservationId);
+                statusText.innerText = 'Confirmado';
+                const btnConfirm = document.getElementById('btnConfirmCard'+reservationId);
+                btnConfirm.classList.add('disabled')
+                const btnShowReceipt = document.getElementById('btnShowReceipt'+reservationId);
+                btnShowReceipt.hidden = false
+                btnShowReceipt.getAttributeNode('href').value = '/receipt/show-pdf/' + response
+            },
+            error: function (response) {
+                console.log(response);
+            }
+         })
+    }
+
+    $('#datetimepicker1').tempusDominus({
+        useCurrent: false,
+        display: {
+            buttons: {
+                today: true,
+                clear: true
+            },
+            components: {
+                clock: false
+            }
+        }
+    });
+</script>
+{% endblock content %}

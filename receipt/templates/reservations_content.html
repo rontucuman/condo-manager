@@ -1,0 +1,45 @@
+                        {% for rsv in reservations %}
+                            <tr>
+                                <th style="text-align: right" scope="row">{{ rsv.row_number }}</th>
+                                <td>{{ rsv.username }}</td>
+                                <td>{{ rsv.common_area_name }}</td>
+                                <td>{{ rsv.begin_reservation_date }}</td>
+                                <td style="text-align: right">Bs. {{ rsv.amount }}</td>
+                                <td>
+                                    <span id="status{{ rsv.reservation_id }}">
+{#                                    {% if rsv.is_canceled %}#}
+{#                                        Cancelado#}
+{#                                    {% else %}#}
+{#                                        {% if rsv.is_confirmed %}#}
+{#                                            Confirmado#}
+{#                                        {% else %}#}
+{#                                            Pendiente#}
+{#                                        {% endif %}#}
+{#                                    {% endif %}#}
+                                        {{ rsv.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button id="btnConfirmCard{{ rsv.reservation_id }}"
+                                            class="btn btn-primary {% if rsv.is_confirmed or rsv.is_canceled %}disabled{% endif %}"
+                                            {% if rsv.is_confirmed or rsv.is_canceled %} aria-disabled="true" {% endif %}
+                                            type="button"
+                                            onclick="confirmReservation({{ rsv.reservation_id }})">Confirmar</button>
+                                    <button id="btnCancelCard{{ rsv.reservation_id }}"
+                                            class="btn btn-danger {% if rsv.is_canceled %}disabled{% endif %}"
+                                            {% if rsv.is_canceled %} aria-disabled="true" {% endif %}
+                                            type="button"
+                                            data-bs-username="{{ rsv.username }}"
+                                            data-bs-commonareaname="{{ rsv.common_area_name }}"
+                                            data-bs-begindate="{{ rsv.begin_reservation_date }}"
+                                            data-bs-enddate="{{ rsv.end_reservation_date }}"
+                                            data-bs-reservationid="{{ rsv.reservation_id }}"
+                                            data-bs-receiptid="{{ rsv.receipt_id }}"
+                                            data-bs-toggle="modal" data-bs-target="#cancelModal">Cancelar</button>
+                                    <a id="btnShowReceipt{{ rsv.reservation_id }}"
+                                       {% if not rsv.is_confirmed or rsv.is_canceled %}hidden{% endif %}
+                                       class="btn btn-success" role="button" href="{% url 'show_pdf' rsv.receipt_filename %}"
+                                       target="_new">Recibo</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
