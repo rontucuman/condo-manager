@@ -1,8 +1,14 @@
+import os
+
 from django.shortcuts import render
+
+from condomanager import settings
+from condomanager.tools.AzureBlobManager import AzureBlobManager
+from receipt.models import Receipt
 from .forms import AreaComunForm, ReservaAreaComunForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse, FileResponse
 from django.urls import reverse
 from .models import AreaComun, User
 from datetime import datetime
@@ -69,3 +75,24 @@ def mis_reservas_area_comun(request):
     usuario = User.objects.get(username=request.user.username)
     mis_reservas = usuario.misReservas.all()
     return render(request, "mis_reservas_area_comun.html", { "mis_reservas": mis_reservas })
+
+
+@login_required
+def ver_recibo(request, reserva_id):
+
+    receipts_path = os.path.join(settings.STATICFILES_DIRS[0], 'receipts/')
+    if not os.path.exists(receipts_path):
+        os.makedirs(receipts_path)
+
+    if Receipt.objects.filter(reservation_id=reserva_id, is_canceled=False).count() > 0:
+        receipt = Receipt.objects.get(reservation_id=reserva_id)
+        receipt_filename = receipt.filename
+        receipt_filepath = os.path.join(receipts_path, receipt_filename)
+        if settings.ENVIRONMENT == 'production' and not os.path.exists(receipt_filepath):
+            blob_manager = AzureBlobManager()
+            blob_manager.download_file(filename=receipt_filename, dest_folder=receipts_path)
+
+        if os.path.exists(receipt_filepath):
+            return FileResponse(open(receipt_filepath, 'rb'), content_type='application/pdf', filename=receipt_filename)
+
+    return HttpResponse("El recibo no fue encontrado")

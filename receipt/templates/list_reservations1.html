@@ -1,0 +1,177 @@
+{% extends 'base_black1.html' %}
+{% block content %}
+
+<!-- Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="cancelModalLabel">Cancelar Reserva</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <p>Reservado por: <span id="usernameModal"></span><br>
+          Area comun: <span id="commonAreaModal"></span><br>
+          Fecha: <span id="beginModal"></span><br>
+{#          Fecha fin: <span id="endModal"></span></p>#}
+            <p><em><strong>Esta accion no se puede deshacer. Esta seguro?</strong></em></p>
+          <input type="hidden" id="reservationId">
+          <input type="hidden" id="receiptId">
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Volver</button>
+          <button id="btnCancelModal" type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar Reserva</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal Script-->
+<script>
+    const cancelModal = document.getElementById('cancelModal')
+    cancelModal.addEventListener('show.bs.modal', event => {
+        // Button that triggered the modal
+        const button = event.relatedTarget
+        // Extract info from data-bs-* attributes
+        const username = button.getAttribute('data-bs-username')
+        const commonAreaName = button.getAttribute('data-bs-commonareaname')
+        const beginDate = button.getAttribute('data-bs-begindate')
+        const endDate = button.getAttribute('data-bs-enddate')
+        const reservationId = button.getAttribute('data-bs-reservationid')
+        const btnCancelModal = document.getElementById('btnCancelModal')
+        btnCancelModal.onclick = function (){ cancelReservation(reservationId) }
+        {#btnCancelModal.addEventListener('click', cancelReservation(reservationId))#}
+        // If necessary, you could initiate an AJAX request here
+        // and then do the updating in a callback.
+        //
+        // Update the modal's content.
+        const usernameModal = document.getElementById('usernameModal')
+        usernameModal.innerText = username
+        const commonAreaModal = document.getElementById('commonAreaModal')
+        commonAreaModal.innerText = commonAreaName
+        const beginModal = document.getElementById('beginModal')
+        beginModal.innerText = beginDate
+        {#const endModal = document.getElementById('endModal')#}
+        {#endModal.innerText = endDate#}
+    })
+
+    function cancelReservation(reservationId) {
+        $.ajax({
+            type : "POST",
+            url: "{% url "cancel_reservation" %}",
+            data: {
+                reservation_id: reservationId,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function (response) {
+                const statusText = document.getElementById('status'+reservationId);
+                statusText.innerText = 'Cancelado';
+                const btnCancel = document.getElementById('btnCancelCard'+reservationId);
+                btnCancel.classList.add('disabled')
+                const btnConfirm = document.getElementById('btnConfirmCard'+reservationId);
+                btnConfirm.classList.add('disabled')
+                const btnShowReceipt = document.getElementById('btnShowReceipt'+reservationId);
+                btnShowReceipt.hidden = true
+            },
+            error: function (response) {
+                console.log(response);
+            }
+         })
+    }
+</script>
+
+<div class="row">
+    <div class="col-lg-12">
+        <h2>Lista de Reservas</h2>
+        <div class="card">
+            <div class="card-body">
+{#                <h5 class="card-title">Acceder</h5>#}
+                <div class="table-responsive-xl">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th scope="col">Reservador por</th>
+                                <th scope="col">Area Comun</th>
+                                <th scope="col">Fecha Reservada</th>
+                                <th scope="col">Monto a Pagar</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for rsv in reservations %}
+                            <tr>
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td>{{ rsv.username }}</td>
+                                <td>{{ rsv.common_area_name }}</td>
+                                <td>{{ rsv.begin_reservation_date }}</td>
+                                <td class="text-right">{{ rsv.amount }}</td>
+                                <td>
+                                    <span id="status{{ rsv.reservation_id }}">
+                                    {% if rsv.is_canceled %}
+                                        Cancelado
+                                    {% else %}
+                                        {% if rsv.is_confirmed %}
+                                            Confirmado
+                                        {% else %}
+                                            Pendiente
+                                        {% endif %}
+                                    {% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button id="btnConfirmCard{{ rsv.reservation_id }}"
+                                            class="btn btn-primary {% if rsv.is_confirmed or rsv.is_canceled %}disabled{% endif %}"
+                                            {% if rsv.is_confirmed or rsv.is_canceled %} aria-disabled="true" {% endif %}
+                                            type="button"
+                                            onclick="confirmReservation({{ rsv.reservation_id }})">Confirmar</button>
+                                    <button id="btnCancelCard{{ rsv.reservation_id }}"
+                                            class="btn btn-danger {% if rsv.is_canceled %}disabled{% endif %}"
+                                            {% if rsv.is_canceled %} aria-disabled="true" {% endif %}
+                                            type="button"
+                                            data-bs-username="{{ rsv.username }}"
+                                            data-bs-commonareaname="{{ rsv.common_area_name }}"
+                                            data-bs-begindate="{{ rsv.begin_reservation_date }}"
+                                            data-bs-enddate="{{ rsv.end_reservation_date }}"
+                                            data-bs-reservationid="{{ rsv.reservation_id }}"
+                                            data-bs-receiptid="{{ rsv.receipt_id }}"
+                                            data-bs-toggle="modal" data-bs-target="#cancelModal">Cancelar</button>
+                                    <a id="btnShowReceipt{{ rsv.reservation_id }}"
+                                       {% if not rsv.is_confirmed or rsv.is_canceled %}hidden{% endif %}
+                                       class="btn btn-success" role="button" href="{% url 'show_pdf' rsv.receipt_filename %}"
+                                       target="_new">Recibo</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function confirmReservation(reservationId) {
+        $.ajax({
+            type : "POST",
+            url: "{% url "confirm_reservation" %}",
+            data: {
+                reservation_id: reservationId,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function (response) {
+                const statusText = document.getElementById('status'+reservationId);
+                statusText.innerText = 'Confirmado';
+                const btnConfirm = document.getElementById('btnConfirmCard'+reservationId);
+                btnConfirm.classList.add('disabled')
+                const btnShowReceipt = document.getElementById('btnShowReceipt'+reservationId);
+                btnShowReceipt.hidden = false
+                btnShowReceipt.getAttributeNode('href').value = '/receipt/show-pdf/' + response
+            },
+            error: function (response) {
+                console.log(response);
+            }
+         })
+    }
+</script>
+{% endblock content %}

@@ -4,15 +4,18 @@ import uuid
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.http import HttpResponse, FileResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.template.loader import render_to_string, get_template
 from django.utils.html import strip_tags
 from xhtml2pdf import pisa
+from django.contrib.auth.models import User, Group
 
-from area_comun.models import ReservaAreaComun
+from area_comun.models import ReservaAreaComun, AreaComun
 from condomanager.email.SingleAzureEmailSender import SingleAzureEmailSender
 from condomanager.tools.AzureBlobManager import AzureBlobManager
+from receipt.CustomFilters import CustomFilters
 from receipt.Reservation import Reservation
 from receipt.models import Receipt
 
@@ -39,7 +42,149 @@ def show_pdf(request, doc='none'):
 
 
 @login_required
+def list_reservations3(request, page=1, numitems=10):
+    if not numitems.isnumeric():
+        numitems = 10
+    if not page.isnumeric():
+        page = 1
+
+    data = get_reservations()
+
+    if request.method == 'GET':
+        paginator = Paginator(data, numitems)
+        page_obj = paginator.get_page(page)
+        return render(request=request, template_name='list_reservations1.html', context={'reservations': page_obj})
+
+    return redirect('list_reservations1')
+
+
+@login_required
 def list_reservations(request):
+    data = get_reservations()
+    return render(request=request, template_name='list_reservations.html', context={'reservations': data})
+
+
+@login_required
+def list_reservations1(request):
+    data = get_reservations()
+    return render(request=request, template_name='list_reservations1.html', context={'reservations': data})
+
+
+@login_required
+def list_reservations2(request):
+    usernames = {}
+    usernames.__setitem__('Todos', '')
+    for usr in Group.objects.get(name='prop-dept').user_set.all().filter(is_staff=False).order_by('username'):
+        usernames.__setitem__(usr.username, usr.username)
+
+    common_area_names = {}
+    common_area_names.__setitem__('Todos', '')
+    for can in AreaComun.objects.all():
+        common_area_names.__setitem__(can.nombre, can.nombre)
+
+    status = {'Todos': '', 'Confirmado': 'Confirmado', 'Cancelado': 'Cancelado', 'Pendiente': 'Pendiente'}
+    context = {
+         'usernames': usernames,
+         'common_area_names': common_area_names,
+         'status': status
+    }
+
+    return render(request=request, template_name='list_reservations2.html', context=context)
+
+
+def get_filters(request):
+    filters = CustomFilters()
+    filters.filter_username = request.GET.get('filter_username', '')
+    filters.filter_common_area_name = request.GET.get('filter_common_area_name', '')
+    date_param = request.GET.get('filter_begin_reservation_date', '')
+    if date_param != '':
+        date_object = datetime.strptime(date_param, '%m/%d/%Y')
+        # date_param = date_object.strftime('%Y-%m-%d')
+        date_param = date_object.date()
+    filters.filter_begin_reservation_date = date_param
+    filters.filter_status = request.GET.get('filter_status')
+
+    return filters
+
+
+def get_reservations_content(request):
+    filters = get_filters(request)
+    content = get_content(request, 'reservations_content.html', filters)
+    return HttpResponse(content=content, content_type='text/html')
+
+
+def get_content(request, template_name, filters):
+    num_items = request.GET.get('num_items', 10)
+    page = request.GET.get('page', 1)
+    data = get_reservations()
+    data.sort(key=lambda x: x.begin_reservation_date, reverse=True)
+    filtered = get_filtered_data(data, filters)
+    paginator = Paginator(filtered, num_items)
+    page_obj = paginator.get_page(page)
+    content = render_to_string(template_name, {'reservations': page_obj})
+
+    return content
+
+
+def get_filtered_data(data, filters):
+    filtered = []
+    index = 1
+    for rsv in data:
+        meets_condition = True
+        meets_condition = check_filter(
+            filter_key=filters.filter_username,
+            data_value=rsv.username,
+            meets_condition=meets_condition)
+        meets_condition = check_filter(
+            filter_key=filters.filter_common_area_name,
+            data_value=rsv.common_area_name,
+            meets_condition=meets_condition)
+        meets_condition = check_filter(
+            filter_key=filters.filter_status,
+            data_value=rsv.status,
+            meets_condition=meets_condition
+        )
+        meets_condition = check_filter(
+            filter_key=filters.filter_begin_reservation_date,
+            data_value=rsv.begin_reservation_date,
+            meets_condition=meets_condition
+        )
+
+        if meets_condition:
+            add_filtered(filtered, index, rsv)
+            index = index + 1
+
+    return filtered
+
+
+def check_filter(filter_key, data_value, meets_condition):
+    if filter_key == '':
+        meets_condition = meets_condition and True
+    else:
+        if filter_key == data_value:
+            meets_condition = meets_condition and True
+        else:
+            meets_condition = meets_condition and False
+
+    return meets_condition
+
+
+def add_filtered(filtered, index, rsv):
+    rsv.row_number = index
+    filtered.append(rsv)
+
+
+def sort_by_begin_date(val):
+    return val.begin_reservation_date
+
+
+def get_pagination_content(request):
+    filters = get_filters(request)
+    content = get_content(request, 'pagination_content.html', filters)
+    return HttpResponse(content=content, content_type='text/html')
+
+
+def get_reservations():
     data = []
     reservations = ReservaAreaComun.objects.all()
     for rsv in reservations:
@@ -60,6 +205,13 @@ def list_reservations(request):
             reservation.amount = receipt.reservation_amount
             reservation.receipt_filename = receipt.filename
 
+            if receipt.is_canceled:
+                reservation.status = 'Cancelado'
+            elif receipt.is_reservation_confirmed:
+                reservation.status = 'Confirmado'
+            else:
+                reservation.status = 'Pendiente'
+
         else:
             reservation.reservation_id = rsv.id
             reservation.is_canceled = False
@@ -74,9 +226,14 @@ def list_reservations(request):
             reservation.amount = '{:.2f}'.format(rsv.area_comun.costo)
             reservation.receipt_filename = 'not found'
 
+            if rsv.confirmada:
+                reservation.status = 'Confirmado'
+            else:
+                reservation.status = 'Pendiente'
+
         data.append(reservation)
 
-    return render(request, 'list_reservations.html', {'reservations': data})
+    return data
 
 
 @login_required
@@ -97,7 +254,7 @@ def confirm_reservation(request):
             else:
                 receipt.receipt_number = Receipt.objects.latest('receipt_number').receipt_number + 1
 
-            receipt.registered_date = datetime.datetime.now()
+            receipt.registered_date = datetime.now()
             receipt.is_canceled = False
             receipt.is_reservation_confirmed = True
             receipt.begin_reservation_date = rsv.fecha

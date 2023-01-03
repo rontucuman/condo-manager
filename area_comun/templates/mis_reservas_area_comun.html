@@ -11,7 +11,8 @@
                 <th scope="col">Nombre</th>
                 <th scope="col">Costo</th>
                 <th scope="col">Fecha</th>
-                <th scope="col">Confirmado?</th>
+                <th scope="col">Estado</th>
+                <th scope="col"></th>
               </tr>
             </thead>
             <tbody class="table-group-divider">
@@ -22,8 +23,15 @@
                 <td>{{ reserva.fecha }}</td>
                 {% if reserva.confirmada == 0 %}
                   <td>Pendiente</td>
+                  <td></td>
                 {% else %}
-                  <td>Reserva Confirmada</td>
+                  <td>Confirmado</td>
+                  <td>
+                    <a id="btnShowReceipt{{ reserva.id }}"
+                                       {% if reserva.confirmada == 0 %}hidden{% endif %}
+                                       class="btn btn-success" role="button" href="{% url 'ver_recibo' reserva.id %}"
+                                       target="_new">Recibo</a>
+                  </td>
                 {% endif %}
               </tr>
               {% endfor %}
