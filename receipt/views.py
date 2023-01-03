@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import os
 import uuid
 
@@ -264,7 +264,6 @@ def confirm_reservation(request):
             filename = generate_pdf(request, receipt)
             receipt.filename = filename
             receipt.save()
-            print()
             send_email('confirm_reservation', receipt, filename)
             return HttpResponse(filename)
         except:
