@@ -150,9 +150,6 @@ def get_filtered_data(data, filters):
             meets_condition=meets_condition
         )
 
-        print(filters.filter_begin_reservation_date)
-        print(rsv.begin_reservation_date)
-
         if meets_condition:
             add_filtered(filtered, index, rsv)
             index = index + 1
@@ -257,7 +254,7 @@ def confirm_reservation(request):
             else:
                 receipt.receipt_number = Receipt.objects.latest('receipt_number').receipt_number + 1
 
-            receipt.registered_date = datetime.datetime.now()
+            receipt.registered_date = datetime.now()
             receipt.is_canceled = False
             receipt.is_reservation_confirmed = True
             receipt.begin_reservation_date = rsv.fecha
@@ -267,6 +264,7 @@ def confirm_reservation(request):
             filename = generate_pdf(request, receipt)
             receipt.filename = filename
             receipt.save()
+            print()
             send_email('confirm_reservation', receipt, filename)
             return HttpResponse(filename)
         except:
