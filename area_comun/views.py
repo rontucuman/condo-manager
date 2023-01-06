@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse, FileResponse
 from django.urls import reverse
-from .models import AreaComun, User, ReservaAreaComun
+from .models import AreaComun, User, ReservaAreaComun, bitacora_ReservaAreaComun
 from django.db import IntegrityError
 
 # Create your views here.
@@ -105,4 +105,24 @@ def limpiar_reservas_antiguas(request):
     for reserva_antigua in reservas_antiguas:
         if reserva_antigua.dias_faltantes_eliminar_reserva < 0:
             print("Eliminando reserva con mas de 3 dias: " + reserva_antigua.__str__())
+            bitacora_ReservaAreaComun(
+                area_comun=reserva_antigua.area_comun,
+                propietario=reserva_antigua.propietario, 
+                fecha=reserva_antigua.fecha, 
+                confirmada=reserva_antigua.confirmada, 
+                fecha_registro=reserva_antigua.fecha_registro,
+                evento="Vencida").save()
             reserva_antigua.delete()
+
+@login_required
+def eliminar_reserva(request, reserva_id):
+    reserva = ReservaAreaComun.objects.get(id=reserva_id)
+    bitacora_ReservaAreaComun(
+        area_comun=reserva.area_comun,
+        propietario=reserva.propietario, 
+        fecha=reserva.fecha, 
+        confirmada=reserva.confirmada, 
+        fecha_registro=reserva.fecha_registro,
+        evento="Eliminado").save()
+    reserva.delete()
+    return HttpResponseRedirect(reverse("mis_reservas_area_comun"))                  

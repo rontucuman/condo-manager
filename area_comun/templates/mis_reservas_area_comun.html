@@ -12,18 +12,24 @@
                 <th scope="col">Costo</th>
                 <th scope="col">Fecha</th>
                 <th scope="col">Estado</th>
-                <th scope="col">Vencera en:</th>
+                <th scope="col">Vencencimiento</th>
+                <th scope="col"></th>
               </tr>
             </thead>
             <tbody class="table-group-divider">
               {% for reserva in mis_reservas %}
               <tr>
                 <td>{{ reserva.area_comun.nombre }}</td>
-                <td>{{ reserva.area_comun.costo }}</td>
+                <td>Bs. {{ reserva.area_comun.costo }}</td>
                 <td>{{ reserva.fecha }}</td>
                 {% if reserva.confirmada == 0 %}
                   <td>Pendiente</td>
                   <td>{{ reserva.dias_faltantes_eliminar_reserva }} dias</td>
+                  <td>
+                    <a type="submit" name="action" value="Eliminar Reserva" class="btn btn-danger" href="{% url 'eliminar_reserva' reserva.id %}" />
+                      Eliminar Reserva
+                    </a>
+                  </td>
                 {% else %}
                   <td>Confirmado</td>
                   <td>
@@ -32,6 +38,7 @@
                                        class="btn btn-success" role="button" href="{% url 'ver_recibo' reserva.id %}"
                                        target="_new">Recibo</a>
                   </td>
+                  <td> </td>
                 {% endif %}
               </tr>
               {% endfor %}

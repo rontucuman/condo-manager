@@ -39,7 +39,8 @@ class ReservaAreaComun(models.Model):
             propietario=self.propietario, 
             fecha=self.fecha, 
             confirmada=self.confirmada, 
-            fecha_registro=self.fecha_registro).save()
+            fecha_registro=self.fecha_registro,
+            evento="Creado").save()
         return super().save(*args, **kwargs)
          
     class Meta:
@@ -51,3 +52,4 @@ class bitacora_ReservaAreaComun(models.Model):
     fecha = models.DateField()
     confirmada = models.BooleanField(default=False)
     fecha_registro = models.DateField(auto_now=True)
+    evento = models.TextField()
