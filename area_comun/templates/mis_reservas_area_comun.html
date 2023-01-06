@@ -12,7 +12,7 @@
                 <th scope="col">Costo</th>
                 <th scope="col">Fecha</th>
                 <th scope="col">Estado</th>
-                <th scope="col"></th>
+                <th scope="col">Vencera en:</th>
               </tr>
             </thead>
             <tbody class="table-group-divider">
@@ -23,7 +23,7 @@
                 <td>{{ reserva.fecha }}</td>
                 {% if reserva.confirmada == 0 %}
                   <td>Pendiente</td>
-                  <td></td>
+                  <td>{{ reserva.dias_faltantes_eliminar_reserva }} dias</td>
                 {% else %}
                   <td>Confirmado</td>
                   <td>

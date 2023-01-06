@@ -10,8 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse, FileResponse
 from django.urls import reverse
-from .models import AreaComun, User
-from datetime import datetime
+from .models import AreaComun, User, ReservaAreaComun
 from django.db import IntegrityError
 
 # Create your views here.
@@ -40,6 +39,7 @@ def registrar_area_comun(request):
 
 @login_required
 def lista_areas_comunes(request):
+    limpiar_reservas_antiguas(request)
     # Caso para multiples administradores
     # lista_areas_comunes = AreaComun.objects.filter(administrador=request.user).order_by("nombre")
     lista_areas_comunes = AreaComun.objects.all().order_by("nombre")
@@ -72,6 +72,7 @@ def reservar_area_comun(request, area_comun_id):
 
 @login_required
 def mis_reservas_area_comun(request):
+    limpiar_reservas_antiguas(request)
     usuario = User.objects.get(username=request.user.username)
     mis_reservas = usuario.misReservas.all()
     return render(request, "mis_reservas_area_comun.html", { "mis_reservas": mis_reservas })
@@ -96,3 +97,12 @@ def ver_recibo(request, reserva_id):
             return FileResponse(open(receipt_filepath, 'rb'), content_type='application/pdf', filename=receipt_filename)
 
     return HttpResponse("El recibo no fue encontrado")
+
+@login_required
+def limpiar_reservas_antiguas(request):
+    reservas_antiguas = ReservaAreaComun.objects.filter(confirmada=False)
+    
+    for reserva_antigua in reservas_antiguas:
+        if reserva_antigua.dias_faltantes_eliminar_reserva < 0:
+            print("Eliminando reserva con mas de 3 dias: " + reserva_antigua.__str__())
+            reserva_antigua.delete()
