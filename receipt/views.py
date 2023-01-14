@@ -96,12 +96,17 @@ def get_filters(request):
     filters = CustomFilters()
     filters.filter_username = request.GET.get('filter_username', '')
     filters.filter_common_area_name = request.GET.get('filter_common_area_name', '')
-    date_param = request.GET.get('filter_begin_reservation_date', '')
-    if date_param != '':
-        date_object = datetime.strptime(date_param, '%m/%d/%Y')
+    begin_date_param = request.GET.get('filter_begin_reservation_date', '')
+    if begin_date_param != '':
+        date_object = datetime.strptime(begin_date_param, '%m/%d/%Y')
         # date_param = date_object.strftime('%Y-%m-%d')
-        date_param = date_object.date()
-    filters.filter_begin_reservation_date = date_param
+        begin_date_param = date_object.date()
+    filters.filter_begin_reservation_date = begin_date_param
+    end_date_param = request.GET.get('filter_end_reservation_date', '')
+    if end_date_param != '':
+        date_object = datetime.strptime(end_date_param, '%m/%d/%Y')
+        end_date_param = date_object.date()
+    filters.filter_end_reservation_date = end_date_param
     filters.filter_status = request.GET.get('filter_status')
 
     return filters
@@ -144,8 +149,13 @@ def get_filtered_data(data, filters):
             data_value=rsv.status,
             meets_condition=meets_condition
         )
-        meets_condition = check_filter(
+        meets_condition = check_begin_date_filter(
             filter_key=filters.filter_begin_reservation_date,
+            data_value=rsv.begin_reservation_date,
+            meets_condition=meets_condition
+        )
+        meets_condition = check_end_date_filter(
+            filter_key=filters.filter_end_reservation_date,
             data_value=rsv.begin_reservation_date,
             meets_condition=meets_condition
         )
@@ -155,6 +165,30 @@ def get_filtered_data(data, filters):
             index = index + 1
 
     return filtered
+
+
+def check_begin_date_filter(filter_key, data_value, meets_condition):
+    if filter_key == '':
+        meets_condition = meets_condition and True
+    else:
+        if data_value >= filter_key:
+            meets_condition = meets_condition and True
+        else:
+            meets_condition = meets_condition and False
+
+    return meets_condition
+
+
+def check_end_date_filter(filter_key, data_value, meets_condition):
+    if filter_key == '':
+        meets_condition = meets_condition and True
+    else:
+        if data_value <= filter_key:
+            meets_condition = meets_condition and True
+        else:
+            meets_condition = meets_condition and False
+
+    return meets_condition
 
 
 def check_filter(filter_key, data_value, meets_condition):
@@ -264,7 +298,6 @@ def confirm_reservation(request):
             filename = generate_pdf(request, receipt)
             receipt.filename = filename
             receipt.save()
-            print()
             send_email('confirm_reservation', receipt, filename)
             return HttpResponse(filename)
         except:
